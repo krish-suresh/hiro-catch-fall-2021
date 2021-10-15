@@ -13,8 +13,8 @@ import numpy as np
 class ThrowTest:
     def __init__(self):
         self.robot = XamyabRobot(visualize_trajectory=False)
-        self.default_gripper_quaternion = Quaternion(*quaternion_from_euler(pi, 0, 0))
-        self.start = Pose(position=Point(*[0.7, -0.1, 0.4]), orientation=self.default_gripper_quaternion)
+        self.default_gripper_quaternion = Quaternion(*quaternion_from_euler(0, pi/4, 0))
+        self.start = Pose(position=Point(*[-0.3, -0.4, 1.1]), orientation=self.default_gripper_quaternion)
         # self.robot.right_manipulator.home()
         # self.robot.right_gripper.close()
         self.move_to(self.start)
@@ -45,17 +45,11 @@ class ThrowTest:
         self.robot.right_manipulator.execute(plan, wait=True)
     def test(self):
         waypoints = []
-        scale = 1
+        scale = 0.1
         wpose = self.robot.right_manipulator.get_current_pose().pose
-        wpose.position.z -= scale * 0.1  # First move up (z)
-        wpose.position.y += scale * 0.2  # and sideways (y)
-        waypoints.append(copy.deepcopy(wpose))
-
-        wpose.position.x += scale * 0.1  # Second move forward/backwards in (x)
-        waypoints.append(copy.deepcopy(wpose))
-
-        wpose.position.y -= scale * 0.1  # Third move sideways (y)
-        waypoints.append(copy.deepcopy(wpose))
+        waypoints.append(Pose(position=Point(*[-0.2, -0.4, 1.2]), orientation=Quaternion(*quaternion_from_euler(0, pi/3, 0))))
+        waypoints.append(Pose(position=Point(*[0, -0.4, 1.2]), orientation=Quaternion(*quaternion_from_euler(0, pi/2, 0))))
+        waypoints.append(Pose(position=Point(*[0.4, -0.4, 1.1]), orientation=Quaternion(*quaternion_from_euler(0, pi/1.5, 0))))
 
         self.follow_path(waypoints)
 if __name__ == "__main__":
