@@ -32,7 +32,6 @@ class ThrowTest:
     def move_to_point(self, point_goal):
         self.move_to(Pose(position=point_goal, orientation=self.default_gripper_quaternion))
     def move_to(self, pose_goal):
-        pose_goal.orientation = self.default_gripper_quaternion
         self.robot.right_manipulator.set_pose_goal(pose_goal)
         self.robot.right_manipulator.go(wait=True)
         self.robot.right_manipulator.stop()
@@ -47,9 +46,13 @@ class ThrowTest:
         waypoints = []
         scale = 0.1
         wpose = self.robot.right_manipulator.get_current_pose().pose
-        waypoints.append(Pose(position=Point(*[-0.2, -0.4, 1.2]), orientation=Quaternion(*quaternion_from_euler(0, pi/3, 0))))
-        waypoints.append(Pose(position=Point(*[0, -0.4, 1.2]), orientation=Quaternion(*quaternion_from_euler(0, pi/2, 0))))
-        waypoints.append(Pose(position=Point(*[0.4, -0.4, 1.1]), orientation=Quaternion(*quaternion_from_euler(0, pi/1.5, 0))))
+        r = 0.2
+        steps = np.linspace(0, pi/8, pi*2 )
+        for ang in steps:
+            waypoints.append(Pose(position=Point(*[-cos(ang)*r, -0.4, 1+sin(ang)*r]), orientation=Quaternion(*quaternion_from_euler(0, ang, 0))))
+        self.move_to(waypoints[0])
+        # waypoints.append(Pose(position=Point(*[0, -0.4, 1.2]), orientation=Quaternion(*quaternion_from_euler(0, pi/2, 0))))
+        # waypoints.append(Pose(position=Point(*[0.4, -0.4, 1.1]), orientation=Quaternion(*quaternion_from_euler(0, pi/1.5, 0))))
 
         self.follow_path(waypoints)
 if __name__ == "__main__":
